@@ -11,7 +11,6 @@ function List() {
     { userInfo, userContacts, filteredContacts, searchTerm, socket },
     dispatch,
   ] = useStateProvider();
-  console.log("socket",socket?.current)
 
   useEffect(() => {
     const getContacts = async () => {
@@ -44,12 +43,12 @@ function List() {
       allMessageStatusSeen(data.to, dispatch);
     });
 
-    dispatch({
-      type: reducerCases.CHANGE_CURRENT_CHAT_USER,
-      user: {
-        isCurrentClicked: false,
-      },
-    });
+    // dispatch({
+    //   type: reducerCases.CHANGE_CURRENT_CHAT_USER,
+    //   user: {
+    //     isCurrentClicked: false,
+    //   },
+    // });
   }, []);
   return (
     <div className="bg-search-input-container-background flex-auto overflow-auto max-h-full custom-scrollbar">

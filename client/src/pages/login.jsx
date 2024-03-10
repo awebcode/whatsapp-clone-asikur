@@ -64,7 +64,7 @@ function login() {
             },
           });
           console.log(data.user);
-          await router.push("/");
+          // await router.push("/");
         }
       }
     } catch (err) {
@@ -72,11 +72,11 @@ function login() {
     }
   };
   console.log("userInfor", userInfo);
-  useEffect(() => {
-    if (userInfo === undefined) {
-      router.push("/");
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   if (userInfo === undefined) {
+  //     router.push("/");
+  //   }
+  // }, [router]);
 
   return (
     <div className="flex justify-center items-center bg-panel-header-background h-screen w-screen flex-col gap-6">

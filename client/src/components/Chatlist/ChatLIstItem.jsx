@@ -38,7 +38,7 @@ function ChatLIstItem({ isContactPage = false, user }) {
       });
     }
   }
-
+console.log({currentChatUser})
   return (
     <div
       onClick={handleContactClick}

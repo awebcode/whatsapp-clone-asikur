@@ -14,12 +14,12 @@ export const addMessage = async (req, res, next) => {
           message,
           sender: {
             connect: {
-              id: parseInt(from),
+              id: from,
             },
           },
           receiver: {
             connect: {
-              id: parseInt(to),
+              id: to,
             },
           },
           messageStatus: getUser ? "delivered" : "sent",
@@ -50,12 +50,12 @@ export const getMessages = async (req, res, next) => {
         where: {
           OR: [
             {
-              senderId: parseInt(from),
-              receiverId: parseInt(to),
+              senderId: from,
+              receiverId: to,
             },
             {
-              senderId: parseInt(to),
-              receiverId: parseInt(from),
+              senderId: to,
+              receiverId: from,
             },
           ],
         },
@@ -70,10 +70,7 @@ export const getMessages = async (req, res, next) => {
 
       const unreadMessages = [];
       messages.forEach((message, index) => {
-        if (
-          message.messageStatus !== "read" &&
-          message.senderId === parseInt(to)
-        ) {
+        if (message.messageStatus !== "read" && message.senderId === to) {
           messages[index].messageStatus = "read";
           unreadMessages.push(message.id);
         }
@@ -117,12 +114,12 @@ export const addImageMessage = async (req, res, next) => {
             type: "image",
             sender: {
               connect: {
-                id: parseInt(from),
+                id: from,
               },
             },
             receiver: {
               connect: {
-                id: parseInt(to),
+                id: to,
               },
             },
           },
@@ -143,11 +140,13 @@ export const addImageMessage = async (req, res, next) => {
 export const addAudioMessage = async (req, res, next) => {
   try {
     if (req.file) {
-      const date = new Date().getHours();
-      const fileName = `uploads/audios/${date}-${req.file.originalname}`;
-      renameSync(req.file.path, fileName);
-      const prisma = getPrismaInstance();
-      const { from, to } = req.query;
+     const uniqueNumber = Date.now() + Math.floor(Math.random() * 100000);
+     const fileName = `uploads/audios/${uniqueNumber}-${req.file.originalname}`;
+     renameSync(req.file.path, fileName);
+     const prisma = getPrismaInstance();
+     const { from, to } = req.query;
+     console.log({ fileName });
+
 
       if (from && to) {
         const message = await prisma.messages.create({
@@ -156,12 +155,12 @@ export const addAudioMessage = async (req, res, next) => {
             type: "audio",
             sender: {
               connect: {
-                id: parseInt(from),
+                id: from,
               },
             },
             receiver: {
               connect: {
-                id: parseInt(to),
+                id: to,
               },
             },
           },
@@ -183,13 +182,13 @@ export const addAudioMessage = async (req, res, next) => {
 export const getInitialChats = async (req, res, next) => {
   try {
     let { userId } = req.params;
-    userId = parseInt(userId);
+    userId = userId;
 
     const prisma = getPrismaInstance();
 
     const user = await prisma.user.findUnique({
       where: {
-        id: parseInt(userId),
+        id: userId,
       },
       include: {
         sentMessages: {
@@ -258,8 +257,7 @@ export const getInitialChats = async (req, res, next) => {
           user = {
             ...user,
             ...msg.sender,
-            totalUnreadMessages:
-              messageStatus !== "seen" || "read" ? 0 : 0,
+            totalUnreadMessages: messageStatus !== "seen" || "read" ? 0 : 0,
           };
         }
         console.log("iSender 2nd block");
@@ -318,7 +316,7 @@ export const seenMessage = async (req, res, next) => {
     }
 
     const message = await prisma.messages.update({
-      where: { id: parseInt(messageId) },
+      where: { id: messageId },
       data: { messageStatus: "seen" },
     });
     // console.log("sseen", message);
@@ -342,7 +340,7 @@ export const deliveredMessage = async (req, res, next) => {
     }
 
     const message = await prisma.messages.update({
-      where: { id: parseInt(messageId) },
+      where: { id: messageId },
       data: { messageStatus: "delivered" },
     });
 

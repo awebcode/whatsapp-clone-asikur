@@ -7,9 +7,11 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import ContextMenu from "../common/ContextMenu";
+import { useRouter } from "next/router";
 
 function ChatHeader() {
-  const [{ currentChatUser, onlineUsers }, dispatch] = useStateProvider();
+  const [{ currentChatUser, onlineUsers, userInfo }, dispatch] =
+    useStateProvider();
   const [contextMenuCordinates, setContextMenuCordinates] = useState({
     x: 0,
     y: 0,
@@ -28,6 +30,8 @@ function ChatHeader() {
       },
     },
   ];
+  const router = useRouter();
+  console.log({ userInfo });
   const handleVoiceCall = () => {
     dispatch({
       type: reducerCases.SET_VOICE_CALL,
@@ -38,6 +42,7 @@ function ChatHeader() {
         roomId: Date.now(),
       },
     });
+    // router.push(`/room/${userInfo?.id}`);
   };
 
   const handleVideoCall = () => {
@@ -50,6 +55,7 @@ function ChatHeader() {
         roomId: Date.now(),
       },
     });
+    // router.push(`/room/${userInfo?.id}`);
   };
 
   return (

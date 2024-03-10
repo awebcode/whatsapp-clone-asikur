@@ -142,33 +142,7 @@ function MessageBar() {
       console.log(e);
     }
   };
-  // const inputChange = (e) => {
-  //   setMessage(e.target.value);
-  //   if (!typing) {
-  //     setTyping(true);
-  //     socket.current?.emit("typing", {
-  //       to: currentChatUser?.id,
-  //     });
-  //   }
-  //   if (e.target.value===null) {
-  //     socket.current?.emit("stopTyping", {
-  //       to: currentChatUser?.id,
-  //     });
-  //   }
-  //   let lastTyping = new Date().getTime();
-  //   var timerLength = 3000;
-  //   setTimeout(() => {
-  //     var timeNow = new Date().getTime();
-  //     var timeDiff = timeNow - lastTyping;
-
-  //     if (timeDiff >= timerLength && typing) {
-  //       socket.current.emit("stopTyping", {
-  //         to: currentChatUser?.id,
-  //       });
-  //       setTyping(false);
-  //     }
-  //   }, timerLength);
-  // };
+  
   const typingTimeoutRef = useRef(null);
   const inputChange = (e) => {
     setMessage(e.target.value);

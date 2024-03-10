@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useStateProvider } from "@/context/StateContext";
 import Image from "next/image";
-import { MdCallEnd, MdOutlineCallEnd } from "react-icons/md";
+import { MdOutlineCallEnd } from "react-icons/md";
 import { reducerCases } from "@/context/constants";
-import axios from "axios";
-import { GET_CALL_TOKEN } from "@/utils/ApiRoutes";
-import { ZegoExpressEngine } from "zego-express-engine-webrtc";
+import { useRouter } from "next/router";
 
 function Container({ data }) {
-  console.log(data);
   const [{ socket, userInfo }, dispatch] = useStateProvider();
   const [callAccepted, setCallAccepted] = useState(false);
-  const [token, setToken] = useState(undefined);
-  const [zgVar, setZgVar] = useState(undefined);
-  const [localStream, setLocalStream] = useState(undefined);
-  const [publishStream, setPublishStream] = useState(undefined);
 
+  const router = useRouter();
   useEffect(() => {
     if (data.type === "outgoing") {
-      socket.current.on("accept-call", () => {
+      socket.current.on("accept-call", (data) => {
         setCallAccepted(true);
+        console.log({ acceptcall: data });
+        router.push(`/room/${data.id}`);
       });
     } else {
       setTimeout(() => {
@@ -28,126 +24,7 @@ function Container({ data }) {
     }
   }, [data]);
 
-  useEffect(() => {
-    const getToken = async () => {
-      try {
-        const { data } = await axios.get(`${GET_CALL_TOKEN}/${userInfo.id}`);
-        setToken(data.token);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    if (callAccepted) {
-      getToken().then((r) => {});
-    }
-  }, [callAccepted]);
-
-  useEffect(() => {
-    const startCall = async () => {
-      import("zego-express-engine-webrtc").then(async (zg) => {
-        const engine = new zg.ZegoExpressEngine(
-          process.env.NEXT_PUBLIC_ZEGO_APP_ID,
-          process.env.NEXT_PUBLIC_ZEGO_SERVER_ID,
-        );
-
-        setZgVar(engine);
-
-        engine.on(
-          "roomStreamUpdate",
-          async (roomID, updateType, streamList, extendedData) => {
-            if (updateType === "ADD") {
-              const remoteVideo = document.getElementById("remote-video");
-              const vd = document.createElement(
-                data.callType === "video" ? "video" : "audio",
-              );
-              vd.id = streamList[0].streamID;
-              vd.autoplay = true;
-              vd.playsInline = true;
-              vd.muted = false;
-              if (remoteVideo) {
-                remoteVideo.appendChild(vd);
-              }
-
-              engine
-                .startPlayingStream(streamList[0].streamID, {
-                  audio: true,
-                  video: true,
-                })
-                .then((stream) => (vd.srcObject = stream));
-            } else if (
-              updateType === "DELETE" &&
-              engine &&
-              localStream &&
-              streamList[0].streamID
-            ) {
-              engine.destroyStream(localStream);
-              engine.stopPublishingStream(streamList[0].streamID);
-              engine.logoutRoom(data.roomId.toString());
-
-              dispatch({
-                type: reducerCases.END_CALL,
-              });
-            }
-          },
-        );
-
-        await engine.loginRoom(
-          data.roomId.toString(),
-          token,
-          {
-            userID: userInfo.id.toString(),
-            userName: userInfo.name,
-          },
-          {
-            userUpdate: true,
-          },
-        );
-
-        const localStream = await engine.createStream({
-          camera: {
-            audio: true,
-            video: data.callType === "video",
-          },
-        });
-
-        const localVideo = document.getElementById("local-video");
-        const vd = document.createElement(
-          data.callType === "video" ? "video" : "audio",
-        );
-
-        vd.id = "video-local-zego";
-        vd.className = "h-28 w-32";
-        vd.autoplay = true;
-        vd.muted = false;
-        vd.playsInline = true;
-
-        if (localVideo) {
-          localVideo.appendChild(vd);
-        }
-
-        const td = document.getElementById("video-local-zego");
-        td.srcObject = localStream;
-
-        const streamID = "123" + new Date().getTime();
-        setPublishStream(streamID);
-        setLocalStream(localStream);
-
-        engine.startPublishingStream(streamID, localStream);
-      });
-    };
-
-    if (callAccepted && token) {
-      startCall().then((r) => {});
-    }
-  }, [token]);
-
   const handleEndCall = () => {
-    if (zgVar && localStream && publishStream) {
-      zgVar.destroyStream(localStream);
-      zgVar.stopPublishingStream(publishStream);
-      zgVar.logoutRoom(data.roomId.toString());
-    }
     if (data.callType === "video") {
       socket.current.emit("reject-video-call", {
         from: data.id,

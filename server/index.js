@@ -160,7 +160,7 @@ io.on("connection", (socket) => {
     console.log("Accept incoming call: ", data);
     const sendUserSocket = onlineUsers.get(data.id);
     if (sendUserSocket) {
-      socket.to(sendUserSocket).emit("accept-call");
+      socket.to(sendUserSocket).emit("accept-call",data);
     }
   });
 });

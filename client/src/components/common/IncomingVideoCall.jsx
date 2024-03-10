@@ -2,18 +2,22 @@ import React from "react";
 import { useStateProvider } from "@/context/StateContext";
 import Image from "next/image";
 import { reducerCases } from "@/context/constants";
+import { useRouter } from "next/router";
 
 function IncomingVideoCall() {
   const [{ incomingVideoCall, socket }, dispatch] = useStateProvider();
+  const router = useRouter();
+    console.log({ incomingVideoCall });
 
   const acceptVideoCall = () => {
-    dispatch({
-      type: reducerCases.SET_VIDEO_CALL,
-      videoCall: {
-        type: "in-coming",
-        ...incomingVideoCall,
-      },
-    });
+    // dispatch({
+    //   type: reducerCases.SET_VIDEO_CALL,
+    //   videoCall: {
+    //     type: "in-coming",
+    //     ...incomingVideoCall,
+    //   },
+    // });
+
     socket.current.emit("accept-incoming-call", {
       id: incomingVideoCall.id,
     });
@@ -22,6 +26,8 @@ function IncomingVideoCall() {
       type: reducerCases.SET_INCOMING_VIDEO_CALL,
       incomingVideoCall: undefined,
     });
+    router.push(`/room/${incomingVideoCall.id}`);
+
   };
 
   const rejectVideoCall = () => {

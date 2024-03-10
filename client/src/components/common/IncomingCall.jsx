@@ -2,26 +2,28 @@ import React from "react";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 function IncomingCall() {
   const [{ incomingVoiceCall, socket }, dispatch] = useStateProvider();
-
+  const router = useRouter();
   const acceptVoiceCall = () => {
-    dispatch({
-      type: reducerCases.SET_VOICE_CALL,
-      voiceCall: {
-        type: "in-coming",
-        ...incomingVoiceCall,
-      },
-    });
+    // dispatch({
+    //   type: reducerCases.SET_VOICE_CALL,
+    //   voiceCall: {
+    //     type: "in-coming",
+    //     ...incomingVoiceCall,
+    //   },
+    // });
     socket.current.emit("accept-incoming-call", {
       id: incomingVoiceCall.id,
     });
-
-    dispatch({
-      type: reducerCases.SET_INCOMING_VOICE_CALL,
-      incomingVoiceCall: undefined,
-    });
+dispatch({
+  type: reducerCases.SET_INCOMING_VOICE_CALL,
+  incomingVoiceCall: undefined,
+});
+    router.push(`/room/${incomingVoiceCall.id}`);
+    
   };
 
   const rejectVoiceCall = () => {

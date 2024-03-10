@@ -16,13 +16,14 @@ function onboarding() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (!newUser && !userInfo?.email) {
-      router.push("/login").then((r) => console.log(r));
-    } else if (!newUser && userInfo?.email) {
-      router.push("/").then((r) => console.log(r));
-    }
-  }, [userInfo, router, newUser]);
+  // useEffect(() => {
+  //   if (!newUser && !userInfo?.email) {
+  //     console.log({ userInfoOnborad:userInfo });
+  //     router.push("/login").then((r) => console.log(r));
+  //   } else if (!newUser && userInfo?.email) {
+  //     router.push("/").then((r) => console.log(r));
+  //   }
+  // }, [userInfo, router, newUser]);
 
   const onboardUser = async () => {
     if (validateDetails) {

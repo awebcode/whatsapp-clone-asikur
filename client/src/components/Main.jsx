@@ -63,6 +63,8 @@ function Main() {
 
       if (!data.status) {
         const { displayName: name, photoURL: profileImage, email } = user;
+      //  console.log("CHECK_USER_ROUTE", data);
+
         dispatch({
           type: reducerCases.SET_NEW_USER,
           newUser: true,
@@ -244,7 +246,7 @@ function Main() {
   }, [currentChatUser]);
 
   //seen-all-messages
-
+  console.log({currentChatUser})
   return (
     <>
       {incomingVideoCall && <IncomingVideoCall />}

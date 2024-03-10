@@ -16,6 +16,7 @@ export const initialState = {
   voiceCall: undefined,
   incomingVoiceCall: undefined,
   incomingVideoCall: undefined,
+  name:"Asikur"
 };
 
 const reducer = (state, action) => {

@@ -113,6 +113,7 @@ export const generateToken = async (req, res, next) => {
     const appId = parseInt(process.env.ZEGO_APP_ID);
     const serverSecret = process.env.ZEGO_SERVER_ID;
     const userId = req.params.userid;
+    console.log({parmas:req.params})
 
     const effectiveTimeInSeconds = 3600;
     const payload = "";
